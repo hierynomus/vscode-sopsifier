@@ -39,7 +39,19 @@
 				"command": "sopsifier.decrypt",
 				"title": "SOPS: Decrypt"
 			}
-		]
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "sopsifier.encrypt",
+					"when": "editorLangId == yaml || editorLangId == json"
+				},
+				{
+					"command": "sopsifier.decrypt",
+					"when": "editorLangId == yaml || editorLangId == json"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
