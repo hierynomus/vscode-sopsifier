@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as cp from "child_process";
 import { Sops } from './sops/sops';
 
 function sopsify(f: (s: Sops) => Promise<string>): () => Promise<void> {
@@ -15,10 +14,18 @@ function sopsify(f: (s: Sops) => Promise<string>): () => Promise<void> {
 		const document = activeEditor.document;
 		f(new Sops())
 			.then(result =>
-				activeEditor.edit(editBuilder => {
-					editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), result);
-				})
-		).then((r) => { if (r) { resolve(); } else { reject("SOPS: Could not replace contents"); }}, (err) => reject(err));
+					activeEditor.edit(editBuilder => {
+						editBuilder.replace(document.validateRange(new vscode.Range(0, 0, document.lineCount, 0)), result);
+				}))
+			.then((r) => {
+				if (!r) {
+					vscode.window.showErrorMessage("SOPS Error: Could not replace contents");
+				}
+				resolve();
+			}, (err) => {
+				vscode.window.showErrorMessage("SOPS Error:" + err);
+				resolve();
+			});
 	});
 }
 
