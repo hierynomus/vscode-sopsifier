@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as cp from "child_process";
+import * as path from 'path';
 
 interface SopsProps {
 
@@ -24,7 +25,8 @@ class Sops implements SopsProps {
 
     private exec(args: string[]): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            var child = cp.spawn("sops", args);
+            var cwd = path.dirname(vscode.window.activeTextEditor.document.fileName);
+            var child = cp.spawn("sops", args, {cwd});
             child.stdin.write(this.getContents());
             child.stdin.end();
             child.stdout.on("data", (data) => {
